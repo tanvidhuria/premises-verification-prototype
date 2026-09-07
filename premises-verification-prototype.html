@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Premises Verification — capture journey prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans+Devanagari:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#12161C;
+  --ink-2:#1C222B;
+  --paper:#FAF9F6;
+  --graphite:#4A525B;
+  --mute:#8A9099;
+  --survey:#F0C000;
+  --verified:#1B6B4F;
+  --stop:#A33B26;
+  --line:#E2DFD8;
+  --line-dark:#2B333D;
+  --sans:"IBM Plex Sans","IBM Plex Sans Devanagari",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  font-family:var(--sans);
+  background:var(--paper);
+  color:var(--ink);
+  -webkit-font-smoothing:antialiased;
+  line-height:1.5;
+}
+
+/* ---------- page shell ---------- */
+.wrap{
+  max-width:1180px;
+  margin:0 auto;
+  padding:40px 28px 72px;
+}
+.masthead{
+  border-bottom:2px solid var(--ink);
+  padding-bottom:18px;
+  margin-bottom:34px;
+}
+.masthead h1{
+  font-size:clamp(26px,3.4vw,40px);
+  font-weight:600;
+  letter-spacing:-0.022em;
+  margin:0 0 6px;
+}
+.masthead p{
+  margin:0;
+  color:var(--graphite);
+  font-size:15px;
+  max-width:62ch;
+}
+.masthead .org{
+  font-size:12px;
+  color:var(--mute);
+  letter-spacing:0.08em;
+  margin:0 0 12px;
+}
+
+.stage{
+  display:grid;
+  grid-template-columns:minmax(320px,380px) 1fr;
+  gap:44px;
+  align-items:start;
+}
+@media(max-width:860px){
+  .stage{grid-template-columns:1fr;gap:32px}
+  .wrap{padding:26px 18px 56px}
+}
+
+/* ---------- phone ---------- */
+.phone{
+  width:100%;
+  max-width:376px;
+  margin:0 auto;
+  background:var(--ink);
+  border-radius:30px;
+  padding:9px;
+  box-shadow:0 1px 0 rgba(0,0,0,.16), 0 22px 44px -28px rgba(18,22,28,.55);
+  position:sticky;
+  top:24px;
+}
+@media(max-width:860px){.phone{position:static}}
+.viewport{
+  position:relative;
+  height:684px;
+  border-radius:22px;
+  overflow:hidden;
+  background:var(--paper);
+  display:flex;
+  flex-direction:column;
+}
+.statusbar{
+  flex:0 0 auto;
+  height:28px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 16px;
+  font-size:11px;
+  font-weight:500;
+  letter-spacing:.02em;
+  color:var(--graphite);
+}
+.viewport.dark .statusbar{color:#8E97A2}
+.viewport.dark{background:var(--ink)}
+.screen{
+  flex:1 1 auto;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+/* ---------- shared phone UI ---------- */
+.pad{padding:20px 22px}
+.grow{flex:1 1 auto;overflow-y:auto}
+.eyebrow{
+  font-size:11.5px;
+  font-weight:600;
+  color:var(--survey);
+  margin:0 0 8px;
+}
+.viewport:not(.dark) .eyebrow{color:#8A6A00}
+.title{
+  font-size:22px;
+  font-weight:600;
+  letter-spacing:-0.018em;
+  margin:0 0 10px;
+  line-height:1.25;
+}
+.body{
+  font-size:14px;
+  color:var(--graphite);
+  margin:0 0 14px;
+}
+.viewport.dark .title{color:#F4F5F6}
+.viewport.dark .body{color:#A8B0B9}
+
+.btn{
+  display:block;
+  width:100%;
+  border:0;
+  border-radius:11px;
+  padding:14px 16px;
+  font-family:var(--sans);
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+  background:var(--ink);
+  color:#fff;
+  transition:transform .1s ease;
+}
+.btn:active{transform:scale(.985)}
+.btn:focus-visible{outline:3px solid var(--survey);outline-offset:2px}
+.btn.ghost{
+  background:transparent;
+  color:var(--graphite);
+  font-weight:500;
+  font-size:14px;
+  padding:11px;
+}
+.viewport.dark .btn.ghost{color:#98A1AB}
+.btn.pale{background:#EDEAE3;color:var(--ink)}
+.btn.gold{background:var(--survey);color:#22190A}
+.footer-cta{
+  flex:0 0 auto;
+  padding:14px 22px 20px;
+  border-top:1px solid var(--line);
+  background:var(--paper);
+}
+.viewport.dark .footer-cta{border-top-color:var(--line-dark);background:var(--ink)}
+
+/* value-exchange list */
+.vx{list-style:none;margin:4px 0 0;padding:0}
+.vx li{
+  display:flex;
+  gap:11px;
+  padding:11px 0;
+  border-bottom:1px solid var(--line);
+  font-size:13.5px;
+  color:var(--graphite);
+  align-items:flex-start;
+}
+.vx li:last-child{border-bottom:0}
+.vx b{color:var(--ink);font-weight:600;display:block;font-size:13.5px;margin-bottom:1px}
+.vx .mk{flex:0 0 16px;height:16px;margin-top:2px}
+
+/* storyboard cards */
+.shots{display:flex;flex-direction:column;gap:10px;margin-top:4px}
+.shot{
+  display:flex;
+  gap:13px;
+  align-items:center;
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:12px 13px;
+  background:#fff;
+}
+.shot .n{
+  flex:0 0 26px;height:26px;border-radius:7px;
+  background:var(--ink);color:var(--survey);
+  font-size:13px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;
+}
+.shot p{margin:0;font-size:13.5px;font-weight:500}
+.shot span{display:block;font-size:12.5px;color:var(--mute);font-weight:400;margin-top:1px}
+
+/* ---------- viewfinder ---------- */
+.finder{
+  position:relative;
+  flex:1 1 auto;
+  background:#0A0D11;
+  overflow:hidden;
+}
+.finder svg{position:absolute;inset:0;width:100%;height:100%;transition:transform .5s cubic-bezier(.2,.7,.3,1);transform-origin:50% 50%}
+.finder.zoom svg{transform:scale(2.1)}
+.finder.dim::after{
+  content:"";position:absolute;inset:0;background:rgba(6,8,11,.66);
+}
+/* corner brackets — the recurring motif */
+.brackets{position:absolute;inset:64px 24px 104px;pointer-events:none}
+.brackets i{position:absolute;width:26px;height:26px;border:2.5px solid var(--survey);opacity:.9}
+.brackets i:nth-child(1){top:0;left:0;border-right:0;border-bottom:0}
+.brackets i:nth-child(2){top:0;right:0;border-left:0;border-bottom:0}
+.brackets i:nth-child(3){bottom:0;left:0;border-right:0;border-top:0}
+.brackets i:nth-child(4){bottom:0;right:0;border-left:0;border-top:0}
+.brackets.warn i{border-color:#E8845C}
+
+.coach{
+  position:absolute;
+  left:18px;right:18px;top:14px;
+  background:rgba(10,13,17,.86);
+  backdrop-filter:blur(6px);
+  border:1px solid rgba(240,192,0,.34);
+  border-radius:11px;
+  padding:11px 13px;
+  color:#F1F2F3;
+  font-size:13px;
+  font-weight:500;
+  display:flex;gap:9px;align-items:flex-start;
+}
+.coach.bad{border-color:rgba(232,132,92,.6)}
+.coach .dot{
+  flex:0 0 7px;height:7px;border-radius:50%;background:var(--survey);margin-top:5px;
+}
+.coach.bad .dot{background:#E8845C}
+
+.shotcount{position:absolute;left:0;right:0;bottom:52px;text-align:center;color:var(--survey);font-size:11.5px;font-weight:600;letter-spacing:.04em}
+.anchorlabel{
+  position:absolute;left:0;right:0;bottom:24px;
+  text-align:center;color:#E8EAEC;font-size:13px;font-weight:500;
+  text-shadow:0 1px 8px rgba(0,0,0,.7);
+  padding:0 26px;
+}
+.shutterbar{
+  flex:0 0 auto;
+  background:var(--ink);
+  padding:14px 22px 20px;
+  display:flex;flex-direction:column;align-items:center;gap:12px;
+}
+.pips{display:flex;gap:7px}
+.pips i{width:22px;height:3px;border-radius:2px;background:#333C46;display:block}
+.pips i.on{background:var(--survey)}
+.pips i.done{background:var(--verified)}
+.shutter{
+  width:64px;height:64px;border-radius:50%;
+  border:3px solid #fff;background:transparent;
+  cursor:pointer;padding:5px;
+}
+.shutter span{display:block;width:100%;height:100%;border-radius:50%;background:#fff;transition:transform .12s}
+.shutter:active span{transform:scale(.88)}
+.shutter:focus-visible{outline:3px solid var(--survey);outline-offset:3px}
+.shutter[disabled]{opacity:.35;cursor:not-allowed}
+
+/* ---------- checks ---------- */
+.checks{list-style:none;margin:8px 0 0;padding:0}
+.checks li{
+  display:flex;gap:11px;align-items:center;
+  padding:11px 0;border-bottom:1px solid var(--line);
+  font-size:13.5px;color:var(--mute);
+  transition:color .25s;
+}
+.checks li:last-child{border-bottom:0}
+.checks li.on{color:var(--ink)}
+.checks .tick{flex:0 0 17px;height:17px;border-radius:50%;border:2px solid var(--line);position:relative}
+.checks li.on .tick{border-color:var(--verified);background:var(--verified)}
+.checks li.on .tick::after{
+  content:"";position:absolute;left:4.5px;top:1.5px;width:4px;height:8px;
+  border:solid #fff;border-width:0 2px 2px 0;transform:rotate(43deg);
+}
+
+/* ---------- outcome ---------- */
+.crest{
+  width:74px;height:74px;position:relative;margin:6px 0 18px;
+}
+.crest i{position:absolute;width:20px;height:20px;border:3px solid var(--verified)}
+.crest i:nth-child(1){top:0;left:0;border-right:0;border-bottom:0}
+.crest i:nth-child(2){top:0;right:0;border-left:0;border-bottom:0}
+.crest i:nth-child(3){bottom:0;left:0;border-right:0;border-top:0}
+.crest i:nth-child(4){bottom:0;right:0;border-left:0;border-top:0}
+.crest .mark{
+  position:absolute;left:22px;top:23px;width:16px;height:28px;
+  border:solid var(--verified);border-width:0 4px 4px 0;transform:rotate(41deg);
+}
+.crest.warn i{border-color:var(--survey)}
+.crest.stop i{border-color:var(--stop)}
+.crest .bang{
+  position:absolute;left:34px;top:20px;width:5px;height:22px;border-radius:3px;background:var(--survey);
+}
+.crest .bang::after{content:"";position:absolute;left:0;top:27px;width:5px;height:5px;border-radius:50%;background:var(--survey)}
+.crest.stop .bang,.crest.stop .bang::after{background:var(--stop)}
+
+.receipt{
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fff;
+  padding:13px 14px;
+  margin-top:14px;
+}
+.receipt div{
+  display:flex;justify-content:space-between;gap:12px;
+  font-size:12.5px;padding:5px 0;color:var(--graphite);
+}
+.receipt div b{color:var(--ink);font-weight:600;text-align:right}
+
+.callout{
+  border-left:3px solid var(--survey);
+  background:#FDF7E3;
+  padding:11px 13px;
+  border-radius:0 9px 9px 0;
+  font-size:13px;
+  color:#5C4A12;
+  margin-top:2px;
+}
+.callout.stopc{border-left-color:var(--stop);background:#FBEFEB;color:#6E2E1D}
+
+/* ---------- reviewer panel ---------- */
+.panel{padding-top:4px}
+.panel h2{
+  font-size:13px;font-weight:600;margin:0 0 4px;letter-spacing:-0.005em;
+}
+.panel .lede{
+  font-size:13.5px;color:var(--graphite);margin:0 0 26px;max-width:56ch;
+}
+.group{margin-bottom:26px}
+.group > h3{
+  font-size:12px;font-weight:600;color:var(--graphite);
+  margin:0 0 9px;
+}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:8px;
+  padding:8px 12px;
+  font-family:var(--sans);
+  font-size:13px;
+  color:var(--graphite);
+  cursor:pointer;
+  transition:border-color .14s, background .14s, color .14s;
+}
+.chip:hover{border-color:#B9B4A8}
+.chip:focus-visible{outline:3px solid var(--survey);outline-offset:2px}
+.chip[aria-pressed="true"]{
+  background:var(--ink);border-color:var(--ink);color:#fff;font-weight:500;
+}
+.chip small{display:block;font-size:11.5px;opacity:.62;margin-top:1px;font-weight:400}
+
+.signals{border-top:1px solid var(--line);margin-top:4px}
+.signals li{
+  list-style:none;
+  display:flex;justify-content:space-between;gap:16px;align-items:baseline;
+  padding:10px 0;border-bottom:1px solid var(--line);
+  font-size:13px;color:var(--mute);
+}
+.signals li.lit{color:var(--ink)}
+.signals li b{font-weight:500;font-size:12.5px;color:var(--mute);text-align:right}
+.signals li.lit b{color:var(--verified)}
+.signals li.flag b{color:var(--stop)}
+.signals ul{margin:0;padding:0}
+.note{
+  font-size:12.5px;color:var(--mute);margin-top:12px;max-width:56ch;
+}
+.restart{
+  border:0;background:none;padding:0;margin-top:6px;
+  font-family:var(--sans);font-size:13px;color:var(--graphite);
+  text-decoration:underline;text-underline-offset:3px;cursor:pointer;
+}
+.restart:focus-visible{outline:3px solid var(--survey);outline-offset:2px}
+
+@media(prefers-reduced-motion:reduce){
+  *{transition:none !important;animation:none !important}
+}
+.spin{
+  width:30px;height:30px;border-radius:50%;
+  border:2.5px solid var(--line);border-top-color:var(--ink);
+  animation:sp .8s linear infinite;
+}
+@keyframes sp{to{transform:rotate(360deg)}}
+.centered{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 30px;gap:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="masthead">
+    <p class="org">LOANS24 BY CARS24 · PROTOTYPE · CUSTOMER-LED PREMISES VERIFICATION</p>
+    <h1>The capture journey, end to end</h1>
+    <p>A clickable walkthrough of what a customer actually does. Use the panel to switch persona, change the language, and force the failure branches — permission denial, wrong location, poor light, weak connectivity — since those are where the journey is really designed.</p>
+  </header>
+
+  <div class="stage">
+
+    <div class="phone">
+      <div class="viewport" id="viewport">
+        <div class="statusbar">
+          <span id="clock">9:41</span>
+          <span id="netlabel">4G</span>
+        </div>
+        <div class="screen" id="screen"></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="group">
+        <h2>Reviewer controls</h2>
+        <p class="lede">Not part of the customer experience — a harness so you can reach every branch without waiting for a real failure.</p>
+
+        <h3>Persona</h3>
+        <div class="chips" id="personaChips"></div>
+      </div>
+
+      <div class="group">
+        <h3>Scenario</h3>
+        <div class="chips" id="scenarioChips"></div>
+      </div>
+
+      <div class="group">
+        <h3>Language</h3>
+        <div class="chips" id="langChips"></div>
+      </div>
+
+      <div class="group">
+        <h3>Signals collected so far</h3>
+        <ul class="signals" id="signals"></ul>
+        <p class="note">This is the point of the journey. What reaches Credit is not a folder of photographs for someone to judge — it is this list, each line independently checkable, which is what lets the decision be made without a person in the path.</p>
+        <button class="restart" id="restart">Start over</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============ copy ============ */
+var T = {
+  wa_from:      {en:"Loans24",                    hi:"Loans24"},
+  wa_msg:       {en:"Your loan is approved. One last step — a quick address check you can do yourself in about 2 minutes. No one will visit.",
+                 hi:"आपका लोन अप्रूव हो गया है। बस एक आख़िरी स्टेप — पते की जाँच, जो आप ख़ुद 2 मिनट में कर सकते हैं। कोई घर नहीं आएगा।"},
+  wa_cta:       {en:"Open verification",           hi:"वेरिफिकेशन खोलें"},
+  wa_time:      {en:"now",                         hi:"अभी"},
+
+  vx_eyebrow:   {en:"Before we start",             hi:"शुरू करने से पहले"},
+  vx_title:     {en:"Why we're asking",            hi:"हम यह क्यों पूछ रहे हैं"},
+  vx_body:      {en:"We need to confirm the address you gave us is real and yours. Doing it yourself replaces a field visit and saves about two days.",
+                 hi:"हमें यह पक्का करना है कि आपने जो पता दिया है वह सही और आपका है। ख़ुद करने से फ़ील्ड विज़िट नहीं होगी और लगभग दो दिन बचेंगे।"},
+  vx_1t:        {en:"Camera, for about 90 seconds", hi:"कैमरा, लगभग 90 सेकंड के लिए"},
+  vx_1s:        {en:"Live only. We can't open your gallery.", hi:"सिर्फ़ लाइव। हम आपकी गैलरी नहीं खोल सकते।"},
+  vx_2t:        {en:"Location, once",              hi:"लोकेशन, एक बार"},
+  vx_2s:        {en:"Only while this screen is open. Never in the background.", hi:"सिर्फ़ जब यह स्क्रीन खुली है। बैकग्राउंड में कभी नहीं।"},
+  vx_3t:        {en:"What we don't collect",       hi:"हम क्या नहीं लेते"},
+  vx_3s:        {en:"No contacts, no other apps, no video of anyone in your home.", hi:"न कॉन्टैक्ट, न दूसरे ऐप, न घर में किसी का वीडियो।"},
+  vx_4t:        {en:"Held for 3 years, then deleted", hi:"3 साल तक रखा जाएगा, फिर हटा दिया जाएगा"},
+  vx_4s:        {en:"You can withdraw consent any time from Settings.", hi:"आप सेटिंग्स से कभी भी सहमति वापस ले सकते हैं।"},
+  vx_cta:       {en:"Agree and continue",          hi:"सहमत हूँ, आगे बढ़ें"},
+
+  loc_wait:     {en:"Checking where you are",      hi:"देख रहे हैं कि आप कहाँ हैं"},
+  loc_waits:    {en:"This takes a moment",         hi:"थोड़ा समय लगेगा"},
+
+  off_title:    {en:"You're not at your address yet", hi:"आप अभी अपने पते पर नहीं हैं"},
+  off_body:     {en:"You're about 3.4 km from the address you gave us. This only works from there — so let's do it when you're back.",
+                 hi:"आप अपने दिए गए पते से लगभग 3.4 किमी दूर हैं। यह वहीं से हो सकता है — तो जब आप लौटें, तब कर लेते हैं।"},
+  off_cta:      {en:"Remind me at 7 pm today",     hi:"आज शाम 7 बजे याद दिलाएँ"},
+  off_alt:      {en:"I'm here now, check again",   hi:"मैं यहीं हूँ, फिर से देखें"},
+
+  perm_title:   {en:"We can't open the camera",    hi:"हम कैमरा नहीं खोल पा रहे"},
+  perm_body:    {en:"Camera access is switched off for Loans24. It's used only on this screen, to record the front of your building. Turn it on and you'll come straight back here.",
+                 hi:"Loans24 के लिए कैमरा बंद है। यह सिर्फ़ इसी स्क्रीन पर, आपकी बिल्डिंग का सामने का हिस्सा लेने के लिए इस्तेमाल होता है। इसे चालू करें, आप सीधे यहीं लौट आएँगे।"},
+  perm_path:    {en:"Settings › Apps › Loans24 › Permissions › Camera", hi:"Settings › Apps › Loans24 › Permissions › Camera"},
+  perm_cta:     {en:"Open settings",               hi:"सेटिंग्स खोलें"},
+  perm_alt:     {en:"I'd rather someone helped me", hi:"मैं चाहता/चाहती हूँ कोई मदद करे"},
+
+  sb_eyebrow:   {en:"Three shots, about 90 seconds", hi:"तीन शॉट, लगभग 90 सेकंड"},
+  sb_title:     {en:"Here's the whole thing",      hi:"पूरा काम यही है"},
+  sb_body:      {en:"Stay outside for the first two. You'll see exactly what to point at, one step at a time.",
+                 hi:"पहले दो के लिए बाहर ही रहें। हर स्टेप पर आपको बताया जाएगा कि कहाँ कैमरा करना है।"},
+  sb_cta:       {en:"I'm ready",                   hi:"मैं तैयार हूँ"},
+
+  cap_of:       {en:"Shot",                        hi:"शॉट"},
+  coach_ok:     {en:"Looks good — hold steady",    hi:"अच्छा है — फ़ोन स्थिर रखें"},
+  coach_dark:   {en:"Too dark. Step back a little, or turn on a light nearby.",
+                 hi:"बहुत अंधेरा है। थोड़ा पीछे हटें, या पास की कोई लाइट जलाएँ।"},
+  coach_fixed:  {en:"Better. Hold steady",         hi:"अब बेहतर है। स्थिर रखें"},
+  fix_cta:      {en:"Done, I've fixed the light",  hi:"हो गया, लाइट ठीक कर दी"},
+
+  chk_title:    {en:"Checking your shots",         hi:"आपके शॉट जाँचे जा रहे हैं"},
+  chk_body:     {en:"Stay on this screen for a few seconds.", hi:"कुछ सेकंड इसी स्क्रीन पर रहें।"},
+  chk_1:        {en:"Photos are sharp and bright enough", hi:"तस्वीरें साफ़ और पर्याप्त रोशन हैं"},
+  chk_2:        {en:"You're at the address you gave us",  hi:"आप अपने दिए गए पते पर हैं"},
+  chk_3:        {en:"Taken live, just now",               hi:"अभी, लाइव ली गई हैं"},
+  chk_4:        {en:"Nameplate matches your address",     hi:"नेमप्लेट आपके पते से मेल खाती है"},
+  chk_5:        {en:"It's you, matching your KYC photo",  hi:"यह आप ही हैं, आपकी KYC फ़ोटो से मेल खाता है"},
+
+  done_eyebrow: {en:"Verified",                    hi:"वेरिफाई हो गया"},
+  done_title:   {en:"That's done",                 hi:"हो गया"},
+  done_body:    {en:"Your address is confirmed. Nothing else is needed from you, and no one will visit.",
+                 hi:"आपका पता कन्फ़र्म हो गया। अब आपसे कुछ नहीं चाहिए, और कोई घर नहीं आएगा।"},
+  done_next:    {en:"Your disbursal continues now.", hi:"आपका डिस्बर्सल अब आगे बढ़ रहा है।"},
+  r_ref:        {en:"Reference",                   hi:"रेफ़रेंस"},
+  r_addr:       {en:"Address",                     hi:"पता"},
+  r_time:       {en:"Completed",                   hi:"पूरा हुआ"},
+  r_took:       {en:"Took",                        hi:"लगा समय"},
+
+  up_title:     {en:"You're done — you can close this", hi:"आपका काम हो गया — आप इसे बंद कर सकते हैं"},
+  up_body:      {en:"The connection here is slow, so we'll finish sending in the background. You don't need to wait or keep the app open.",
+                 hi:"यहाँ नेटवर्क धीमा है, इसलिए बाकी भेजना बैकग्राउंड में पूरा होगा। आपको इंतज़ार करने या ऐप खुला रखने की ज़रूरत नहीं।"},
+  up_cta:       {en:"Close",                       hi:"बंद करें"},
+
+  retry_eyebrow:{en:"One quick fix",               hi:"एक छोटी सी चीज़"},
+  retry_title:  {en:"The door number didn't come out", hi:"दरवाज़े का नंबर साफ़ नहीं आया"},
+  retry_body:   {en:"Everything else is fine. Just take that one shot again — a bit closer, so the number fills more of the frame.",
+                 hi:"बाकी सब ठीक है। बस वह एक शॉट फिर से लें — थोड़ा पास से, ताकि नंबर बड़ा दिखे।"},
+  retry_keep:   {en:"Your other two shots are saved. You won't redo them.", hi:"आपके बाकी दो शॉट सेव हैं। उन्हें दोबारा नहीं लेना पड़ेगा।"},
+  retry_cta:    {en:"Retake that shot",            hi:"वह शॉट दोबारा लें"},
+
+  exc_eyebrow:  {en:"Being reviewed",              hi:"जाँच जारी है"},
+  exc_title:    {en:"We're taking a closer look",  hi:"हम इसे और ध्यान से देख रहे हैं"},
+  exc_body:     {en:"Nothing more is needed from you. We'll confirm within the hour, and we'll message you either way.",
+                 hi:"आपसे अब कुछ नहीं चाहिए। हम एक घंटे के अंदर कन्फ़र्म कर देंगे, और दोनों ही सूरत में आपको मैसेज करेंगे।"},
+  exc_cta:      {en:"Close",                       hi:"बंद करें"},
+
+  assist_title: {en:"We'll call you instead",      hi:"तो हम आपको कॉल कर लेंगे"},
+  assist_body:  {en:"Someone from Loans24 will call you today between 4 and 6 pm and do this with you on a video call. Your application stays exactly where it is.",
+                 hi:"Loans24 से कोई आज शाम 4 से 6 बजे के बीच आपको कॉल करेगा और वीडियो कॉल पर यह आपके साथ पूरा करेगा। आपकी एप्लिकेशन जहाँ है वहीं रहेगी।"},
+  assist_cta:   {en:"Close",                       hi:"बंद करें"}
+};
+
+/* ============ personas ============ */
+var PERSONAS = {
+  rakesh:{
+    key:"rakesh", name:"Rakesh, 31", sub:"Salaried · rented flat",
+    address:{en:"H-402, Mangal Vihar, Jaipur", hi:"H-402, मंगल विहार, जयपुर"},
+    anchors:[
+      {en:"Stand back so the whole building is in the frame", hi:"थोड़ा पीछे खड़े हों ताकि पूरी बिल्डिंग फ़्रेम में आ जाए"},
+      {en:"Now the door number or the nameplate, up close", hi:"अब दरवाज़े का नंबर या नेमप्लेट, पास से"},
+      {en:"Stand at your door and turn the camera on yourself", hi:"अपने दरवाज़े पर खड़े हों और कैमरा अपनी तरफ़ करें"}
+    ],
+    plate:"H-402", ocr:"H-402 · MANGAL VIHAR", scene:"flat"
+  },
+  sunita:{
+    key:"sunita", name:"Sunita, 42", sub:"Self-employed · shop",
+    address:{en:"Sunita Garments, Ring Rd, Surat", hi:"सुनीता गारमेंट्स, रिंग रोड, सूरत"},
+    anchors:[
+      {en:"Stand across the lane so the whole shopfront fits", hi:"गली के उस पार खड़ी हों ताकि पूरी दुकान फ़्रेम में आए"},
+      {en:"Now the shop board, close enough to read the name", hi:"अब दुकान का बोर्ड, इतना पास कि नाम पढ़ा जा सके"},
+      {en:"Stand at your counter and turn the camera on yourself", hi:"अपने काउंटर पर खड़ी हों और कैमरा अपनी तरफ़ करें"}
+    ],
+    plate:"SUNITA GARMENTS", ocr:"SUNITA GARMENTS · RING RD", scene:"shop"
+  },
+  arjun:{
+    key:"arjun", name:"Arjun, 27", sub:"Works from home · PG",
+    address:{en:"Room 6, Shanti PG, Bengaluru", hi:"रूम 6, शांति पीजी, बेंगलुरु"},
+    anchors:[
+      {en:"Stand back so the whole building is in the frame", hi:"थोड़ा पीछे खड़े हों ताकि पूरी बिल्डिंग फ़्रेम में आ जाए"},
+      {en:"No nameplate? The society board or meter number works", hi:"नेमप्लेट नहीं है? सोसाइटी बोर्ड या मीटर नंबर भी चलेगा"},
+      {en:"Stand at your room door and turn the camera on yourself", hi:"अपने कमरे के दरवाज़े पर खड़े हों और कैमरा अपनी तरफ़ करें"}
+    ],
+    plate:"SHANTI PG", ocr:"SHANTI PG · METER 4471", scene:"pg"
+  }
+};
+
+var SCENARIOS = [
+  {key:"happy",  label:"Happy path",           sub:"Auto-passes in one go"},
+  {key:"perm",   label:"Camera denied",        sub:"Permission recovery"},
+  {key:"offsite",label:"Wrong location",       sub:"Pre-flight gate stops it"},
+  {key:"dark",   label:"Poor light",           sub:"Coaching at capture"},
+  {key:"weak",   label:"Weak connectivity",    sub:"Done before upload ends"},
+  {key:"retry",  label:"Guided retry",         sub:"One shot again, not three"},
+  {key:"excep",  label:"True exception",       sub:"Routed to a human"}
+];
+
+/* ============ state ============ */
+var S = {
+  persona:"rakesh",
+  scenario:"happy",
+  lang:"en",
+  step:"entry",
+  anchor:0,
+  lightFixed:false,
+  retryMode:false,
+  signals:[]
+};
+
+function t(k){ var e=T[k]; return e ? (e[S.lang]||e.en) : k; }
+function tv(o){ return o ? (o[S.lang]||o.en) : ""; }
+function P(){ return PERSONAS[S.persona]; }
+function esc(s){ return String(s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+
+/* ============ scenes ============ */
+var ORIGIN={flat:"74% 62%",shop:"50% 40%",pg:"72% 61%"};
+function scene(kind, withPerson, plate){
+  var sky = '<rect width="360" height="560" fill="#141A21"/>';
+  var glow = '<rect width="360" height="96" fill="#232E3B"/>';
+  var ground = '<rect y="452" width="360" height="108" fill="#171C22"/>';
+  var body="";
+  if(kind==="shop"){
+    body =
+      '<rect x="30" y="196" width="300" height="256" fill="#2A3038"/>'+
+      '<rect x="30" y="196" width="300" height="52" fill="#7C4A1E"/>'+
+      '<text x="180" y="230" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="18" font-weight="600" fill="#F6E7C8" letter-spacing="1.4">'+esc(plate)+'</text>'+
+      '<rect x="56" y="266" width="112" height="126" fill="#3A424C" stroke="#4E5865" stroke-width="2"/>'+
+      '<rect x="192" y="266" width="112" height="126" fill="#3A424C" stroke="#4E5865" stroke-width="2"/>'+
+      '<rect x="56" y="392" width="248" height="60" fill="#222831"/>';
+  } else if(kind==="pg"){
+    body =
+      '<rect x="42" y="100" width="276" height="352" fill="#272D35"/>'+
+      '<rect x="66" y="132" width="50" height="56" fill="#3D4650"/>'+
+      '<rect x="142" y="132" width="50" height="56" fill="#3D4650"/>'+
+      '<rect x="218" y="132" width="50" height="56" fill="#3D4650"/>'+
+      '<rect x="66" y="214" width="50" height="56" fill="#3D4650"/>'+
+      '<rect x="218" y="214" width="50" height="56" fill="#3D4650"/>'+
+      '<rect x="142" y="340" width="76" height="112" fill="#4A3524"/>'+
+      '<rect x="228" y="326" width="62" height="32" fill="#1E242B" stroke="#5A646F" stroke-width="1.5"/>'+
+      '<text x="259" y="348" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="11" font-weight="600" fill="#C9D0D8">'+esc(plate)+'</text>';
+  } else {
+    body =
+      '<rect x="30" y="86" width="300" height="366" fill="#282E36"/>'+
+      '<rect x="58" y="126" width="62" height="64" fill="#3D4650"/>'+
+      '<rect x="149" y="126" width="62" height="64" fill="#3D4650"/>'+
+      '<rect x="240" y="126" width="62" height="64" fill="#3D4650"/>'+
+      '<rect x="58" y="216" width="62" height="64" fill="#3D4650"/>'+
+      '<rect x="240" y="216" width="62" height="64" fill="#3D4650"/>'+
+      '<rect x="146" y="330" width="76" height="122" fill="#4A3524"/>'+
+      '<rect x="150" y="334" width="68" height="118" fill="none" stroke="#6B5238" stroke-width="2"/>'+
+      '<rect x="238" y="320" width="56" height="30" fill="#EDE8DC"/>'+
+      '<text x="266" y="341" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="14" font-weight="700" fill="#22282F">'+esc(plate)+'</text>';
+  }
+  var person = withPerson
+    ? '<circle cx="182" cy="330" r="25" fill="#C9A184"/>'+
+      '<path d="M140 412 q42 -50 84 0 z" fill="#2F5E8C"/>'+
+      '<rect x="140" y="388" width="84" height="24" fill="#2F5E8C"/>'
+    : "";
+  return '<svg viewBox="0 0 360 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true" style="transform-origin:'+ORIGIN[kind]+'">'+sky+glow+body+ground+person+'</svg>';
+}
+
+/* ============ signals ============ */
+var SIGNAL_DEFS = [
+  {id:"consent", label:"Consent captured", val:"logged, revocable"},
+  {id:"gps",     label:"Location fix",     val:"±8 m"},
+  {id:"pin",     label:"Distance from confirmed pin", val:"12 m"},
+  {id:"device",  label:"Device attestation", val:"clean"},
+  {id:"live",    label:"Capture continuity", val:"unbroken, parallax present"},
+  {id:"ocr",     label:"Text read at premises", val:"—"},
+  {id:"face",    label:"Face match to KYC selfie", val:"0.94"},
+  {id:"dupe",    label:"Media hash seen elsewhere", val:"no match"}
+];
+
+function addSignal(id, override, flag){
+  for(var i=0;i<S.signals.length;i++){ if(S.signals[i].id===id) return; }
+  var def=null;
+  for(var j=0;j<SIGNAL_DEFS.length;j++){ if(SIGNAL_DEFS[j].id===id) def=SIGNAL_DEFS[j]; }
+  if(!def) return;
+  S.signals.push({id:id,label:def.label,val:override||def.val,flag:!!flag});
+  renderSignals();
+}
+
+function renderSignals(){
+  var el=document.getElementById("signals");
+  var html="";
+  for(var i=0;i<SIGNAL_DEFS.length;i++){
+    var d=SIGNAL_DEFS[i], got=null;
+    for(var k=0;k<S.signals.length;k++){ if(S.signals[k].id===d.id) got=S.signals[k]; }
+    html += '<li class="'+(got?(got.flag?"lit flag":"lit"):"")+'">'+
+            '<span>'+esc(d.label)+'</span><b>'+esc(got?got.val:"not yet")+'</b></li>';
+  }
+  el.innerHTML=html;
+}
+
+/* ============ screens ============ */
+var timers=[];
+function clearTimers(){ for(var i=0;i<timers.length;i++) clearTimeout(timers[i]); timers=[]; }
+function later(fn,ms){ timers.push(setTimeout(fn,ms)); }
+
+function go(step){ S.step=step; render(); }
+
+function render(){
+  clearTimers();
+  var vp=document.getElementById("viewport");
+  var el=document.getElementById("screen");
+  var dark = (S.step==="capture");
+  vp.className = "viewport"+(dark?" dark":"");
+  document.getElementById("netlabel").textContent =
+    (S.scenario==="weak" ? "2G" : "4G");
+
+  var f = SCREENS[S.step];
+  el.innerHTML = f ? f() : "";
+  bindScreen();
+}
+
+var SCREENS = {
+
+entry:function(){
+  return '<div class="grow pad" style="display:flex;flex-direction:column;justify-content:center;background:#E8E4DA">'+
+    '<div style="background:#fff;border-radius:14px;padding:16px 17px;box-shadow:0 1px 2px rgba(0,0,0,.08)">'+
+      '<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px">'+
+        '<b style="font-size:13.5px;color:#1B6B4F">'+esc(t("wa_from"))+'</b>'+
+        '<span style="font-size:11.5px;color:#8A9099">'+esc(t("wa_time"))+'</span>'+
+      '</div>'+
+      '<p style="margin:0 0 14px;font-size:14px;color:#2C333B;line-height:1.55">'+esc(t("wa_msg"))+'</p>'+
+      '<button class="btn" data-go="consent">'+esc(t("wa_cta"))+'</button>'+
+    '</div>'+
+  '</div>';
+},
+
+consent:function(){
+  var mk='<svg class="mk" viewBox="0 0 16 16" aria-hidden="true"><rect x="1" y="1" width="14" height="14" rx="3" fill="none" stroke="#8A6A00" stroke-width="1.6"/></svg>';
+  return '<div class="grow pad">'+
+    '<p class="eyebrow">'+esc(t("vx_eyebrow"))+'</p>'+
+    '<h2 class="title">'+esc(t("vx_title"))+'</h2>'+
+    '<p class="body">'+esc(t("vx_body"))+'</p>'+
+    '<ul class="vx">'+
+      '<li>'+mk+'<span><b>'+esc(t("vx_1t"))+'</b>'+esc(t("vx_1s"))+'</span></li>'+
+      '<li>'+mk+'<span><b>'+esc(t("vx_2t"))+'</b>'+esc(t("vx_2s"))+'</span></li>'+
+      '<li>'+mk+'<span><b>'+esc(t("vx_3t"))+'</b>'+esc(t("vx_3s"))+'</span></li>'+
+      '<li>'+mk+'<span><b>'+esc(t("vx_4t"))+'</b>'+esc(t("vx_4s"))+'</span></li>'+
+    '</ul>'+
+  '</div>'+
+  '<div class="footer-cta"><button class="btn" data-go="locating" data-sig="consent">'+esc(t("vx_cta"))+'</button></div>';
+},
+
+locating:function(){
+  later(function(){
+    if(S.scenario==="offsite"){ addSignal("gps","±11 m"); addSignal("pin","3.4 km away",true); go("offsite"); }
+    else if(S.scenario==="perm"){ addSignal("gps"); addSignal("pin"); go("perm"); }
+    else { addSignal("gps"); addSignal("pin"); addSignal("device"); go("storyboard"); }
+  },1500);
+  return '<div class="centered">'+
+    '<div class="spin"></div>'+
+    '<h2 class="title" style="font-size:18px;margin:8px 0 0">'+esc(t("loc_wait"))+'</h2>'+
+    '<p class="body" style="margin:0">'+esc(t("loc_waits"))+'</p>'+
+  '</div>';
+},
+
+offsite:function(){
+  return '<div class="grow pad" style="display:flex;flex-direction:column;justify-content:center">'+
+    '<div class="crest warn"><i></i><i></i><i></i><i></i><span class="bang"></span></div>'+
+    '<h2 class="title">'+esc(t("off_title"))+'</h2>'+
+    '<p class="body">'+esc(t("off_body"))+'</p>'+
+    '<div class="callout">'+esc(tv(P().address))+'</div>'+
+  '</div>'+
+  '<div class="footer-cta">'+
+    '<button class="btn" data-go="entry">'+esc(t("off_cta"))+'</button>'+
+    '<button class="btn ghost" data-force="happy">'+esc(t("off_alt"))+'</button>'+
+  '</div>';
+},
+
+perm:function(){
+  return '<div class="grow pad" style="display:flex;flex-direction:column;justify-content:center">'+
+    '<div class="crest stop"><i></i><i></i><i></i><i></i><span class="bang"></span></div>'+
+    '<h2 class="title">'+esc(t("perm_title"))+'</h2>'+
+    '<p class="body">'+esc(t("perm_body"))+'</p>'+
+    '<div class="callout">'+esc(t("perm_path"))+'</div>'+
+  '</div>'+
+  '<div class="footer-cta">'+
+    '<button class="btn" data-force="happy" data-target="storyboard">'+esc(t("perm_cta"))+'</button>'+
+    '<button class="btn ghost" data-go="assist">'+esc(t("perm_alt"))+'</button>'+
+  '</div>';
+},
+
+assist:function(){
+  return '<div class="grow pad" style="display:flex;flex-direction:column;justify-content:center">'+
+    '<div class="crest"><i></i><i></i><i></i><i></i><span class="mark"></span></div>'+
+    '<h2 class="title">'+esc(t("assist_title"))+'</h2>'+
+    '<p class="body">'+esc(t("assist_body"))+'</p>'+
+  '</div>'+
+  '<div class="footer-cta"><button class="btn pale" data-go="entry">'+esc(t("assist_cta"))+'</button></div>';
+},
+
+storyboard:function(){
+  var a=P().anchors;
+  return '<div class="grow pad">'+
+    '<p class="eyebrow">'+esc(t("sb_eyebrow"))+'</p>'+
+    '<h2 class="title">'+esc(t("sb_title"))+'</h2>'+
+    '<p class="body">'+esc(t("sb_body"))+'</p>'+
+    '<div class="shots">'+
+      '<div class="shot"><span class="n">1</span><p>'+esc(tv(a[0]))+'</p></div>'+
+      '<div class="shot"><span class="n">2</span><p>'+esc(tv(a[1]))+'</p></div>'+
+      '<div class="shot"><span class="n">3</span><p>'+esc(tv(a[2]))+'</p></div>'+
+    '</div>'+
+  '</div>'+
+  '<div class="footer-cta"><button class="btn gold" data-capture="start">'+esc(t("sb_cta"))+'</button></div>';
+},
+
+capture:function(){
+  var p=P(), i=S.anchor;
+  var isDark = (S.scenario==="dark" && i===0 && !S.lightFixed);
+  var coach = isDark ? t("coach_dark") : (S.lightFixed && i===0 ? t("coach_fixed") : t("coach_ok"));
+  var pips="";
+  for(var k=0;k<3;k++){
+    pips += '<i class="'+(k<i?"done":(k===i?"on":""))+'"></i>';
+  }
+  return '<div class="finder'+(i===1?" zoom":"")+(isDark?" dim":"")+'">'+
+      scene(p.scene, i===2, p.plate)+
+      '<div class="brackets'+(isDark?" warn":"")+'"><i></i><i></i><i></i><i></i></div>'+
+      '<div class="coach'+(isDark?" bad":"")+'"><span class="dot"></span><span>'+esc(coach)+'</span></div>'+
+      '<p class="shotcount">'+esc(t("cap_of"))+' '+(i+1)+' / 3</p>'+'<p class="anchorlabel">'+esc(tv(p.anchors[i]))+'</p>'+
+    '</div>'+
+    '<div class="shutterbar">'+
+      '<div class="pips">'+pips+'</div>'+
+      (isDark
+        ? '<button class="btn gold" style="max-width:260px" data-fixlight="1">'+esc(t("fix_cta"))+'</button>'
+        : '<button class="shutter" data-shoot="1" aria-label="Capture"><span></span></button>')+
+    '</div>';
+},
+
+checking:function(){
+  var rows=[t("chk_1"),t("chk_2"),t("chk_3"),t("chk_4"),t("chk_5")];
+  var html='<div class="grow pad" style="display:flex;flex-direction:column;justify-content:center">'+
+    '<h2 class="title">'+esc(t("chk_title"))+'</h2>'+
+    '<p class="body">'+esc(t("chk_body"))+'</p>'+
+    '<ul class="checks">';
+  for(var i=0;i<rows.length;i++){
+    html += '<li data-c="'+i+'"><span class="tick"></span><span>'+esc(rows[i])+'</span></li>';
+  }
+  html += '</ul></div>';
+
+  later(function(){ light(0); addSignal("live"); },350);
+  later(function(){ light(1); },900);
+  later(function(){ light(2); addSignal("dupe"); },1450);
+  later(function(){
+    light(3);
+    if(S.scenario==="retry" && !S.retryMode) addSignal("ocr","unreadable",true);
+    else addSignal("ocr", P().ocr);
+  },2050);
+  later(function(){ light(4); addSignal("face"); },2650);
+  later(function(){
+    if(S.scenario==="weak") go("uploading");
+    else if(S.scenario==="retry" && !S.retryMode) go("retry");
+    else if(S.scenario==="excep") go("excep");
+    else go("done");
+  },3400);
+  return html;
+},
+
+uploading:function(){
+  return '<div class="grow pad" style="display:flex;flex-direction:column;justify-content:center">'+
+    '<div class="crest"><i></i><i></i><i></i><i></i><span class="mark"></span></div>'+
+    '<h2 class="title">'+esc(t("up_title"))+'</h2>'+
+    '<p class="body">'+esc(t("up_body"))+'</p>'+
+  '</div>'+
+  '<div class="footer-cta"><button class="btn pale" data-go="entry">'+esc(t("up_cta"))+'</button></div>';
+},
+
+retry:function(){
+  return '<div class="grow pad" style="display:flex;flex-direction:column;justify-content:center">'+
+    '<p class="eyebrow">'+esc(t("retry_eyebrow"))+'</p>'+
+    '<h2 class="title">'+esc(t("retry_title"))+'</h2>'+
+    '<p class="body">'+esc(t("retry_body"))+'</p>'+
+    '<div class="callout">'+esc(t("retry_keep"))+'</div>'+
+  '</div>'+
+  '<div class="footer-cta"><button class="btn gold" data-retryshot="1">'+esc(t("retry_cta"))+'</button></div>';
+},
+
+excep:function(){
+  return '<div class="grow pad" style="display:flex;flex-direction:column;justify-content:center">'+
+    '<p class="eyebrow">'+esc(t("exc_eyebrow"))+'</p>'+
+    '<div class="crest warn"><i></i><i></i><i></i><i></i><span class="bang"></span></div>'+
+    '<h2 class="title">'+esc(t("exc_title"))+'</h2>'+
+    '<p class="body">'+esc(t("exc_body"))+'</p>'+
+  '</div>'+
+  '<div class="footer-cta"><button class="btn pale" data-go="entry">'+esc(t("exc_cta"))+'</button></div>';
+},
+
+done:function(){
+  var now=new Date();
+  var hh=now.getHours(), mm=now.getMinutes();
+  var stamp=(hh%12||12)+":"+(mm<10?"0":"")+mm+" "+(hh<12?"am":"pm");
+  return '<div class="grow pad" style="display:flex;flex-direction:column;justify-content:center">'+
+    '<p class="eyebrow">'+esc(t("done_eyebrow"))+'</p>'+
+    '<div class="crest"><i></i><i></i><i></i><i></i><span class="mark"></span></div>'+
+    '<h2 class="title">'+esc(t("done_title"))+'</h2>'+
+    '<p class="body">'+esc(t("done_body"))+'</p>'+
+    '<p class="body" style="color:#1B6B4F;font-weight:500">'+esc(t("done_next"))+'</p>'+
+    '<div class="receipt">'+
+      '<div><span>'+esc(t("r_ref"))+'</span><b>PV-8814-2K</b></div>'+
+      '<div><span>'+esc(t("r_addr"))+'</span><b>'+esc(tv(P().address))+'</b></div>'+
+      '<div><span>'+esc(t("r_time"))+'</span><b>'+esc(stamp)+'</b></div>'+
+      '<div><span>'+esc(t("r_took"))+'</span><b>1 min 48 s</b></div>'+
+    '</div>'+
+  '</div>'+
+  '<div class="footer-cta"><button class="btn pale" data-go="entry">'+esc(t("up_cta"))+'</button></div>';
+}
+
+};
+
+function light(i){
+  var el=document.querySelector('[data-c="'+i+'"]');
+  if(el) el.classList.add("on");
+}
+
+/* ============ interaction ============ */
+function bindScreen(){
+  var el=document.getElementById("screen");
+  var nodes=el.querySelectorAll("[data-go],[data-capture],[data-shoot],[data-fixlight],[data-force],[data-retryshot]");
+  for(var i=0;i<nodes.length;i++){
+    nodes[i].addEventListener("click", onTap);
+  }
+}
+
+function onTap(e){
+  var b=e.currentTarget;
+
+  if(b.dataset.sig) addSignal(b.dataset.sig);
+
+  if(b.dataset.force){
+    S.scenario=b.dataset.force;
+    syncChips();
+    go(b.dataset.target || "locating");
+    return;
+  }
+  if(b.dataset.go){
+    if(b.dataset.go==="entry") return reset();
+    return go(b.dataset.go);
+  }
+  if(b.dataset.capture){
+    S.anchor=0; S.lightFixed=false;
+    return go("capture");
+  }
+  if(b.dataset.fixlight){
+    S.lightFixed=true;
+    return go("capture");
+  }
+  if(b.dataset.retryshot){
+    S.retryMode=true; S.anchor=1;
+    return go("capture");
+  }
+  if(b.dataset.shoot){
+    if(S.retryMode){ S.retryMode=true; return go("checking"); }
+    if(S.anchor<2){ S.anchor++; return go("capture"); }
+    return go("checking");
+  }
+}
+
+function reset(){
+  S.step="entry"; S.anchor=0; S.lightFixed=false; S.retryMode=false; S.signals=[];
+  renderSignals(); render();
+}
+
+/* ============ chips ============ */
+function chipHTML(key,label,sub,active){
+  return '<button class="chip" data-key="'+key+'" aria-pressed="'+(active?"true":"false")+'">'+
+    esc(label)+(sub?'<small>'+esc(sub)+'</small>':'')+'</button>';
+}
+
+function buildChips(){
+  var pc=document.getElementById("personaChips"), h="";
+  for(var k in PERSONAS){
+    if(!PERSONAS.hasOwnProperty(k)) continue;
+    h += chipHTML(k, PERSONAS[k].name, PERSONAS[k].sub, S.persona===k);
+  }
+  pc.innerHTML=h;
+
+  var sc=document.getElementById("scenarioChips"), h2="";
+  for(var i=0;i<SCENARIOS.length;i++){
+    h2 += chipHTML(SCENARIOS[i].key, SCENARIOS[i].label, SCENARIOS[i].sub, S.scenario===SCENARIOS[i].key);
+  }
+  sc.innerHTML=h2;
+
+  var lc=document.getElementById("langChips");
+  lc.innerHTML = chipHTML("en","English","",S.lang==="en")+chipHTML("hi","हिन्दी","",S.lang==="hi");
+
+  wire(pc,function(k){ S.persona=k; reset(); });
+  wire(sc,function(k){ S.scenario=k; reset(); });
+  wire(lc,function(k){ S.lang=k; syncChips(); render(); });
+}
+
+function wire(container,fn){
+  var b=container.querySelectorAll(".chip");
+  for(var i=0;i<b.length;i++){
+    (function(btn){
+      btn.addEventListener("click",function(){ fn(btn.dataset.key); syncChips(); });
+    })(b[i]);
+  }
+}
+
+function syncChips(){
+  setPressed("personaChips",S.persona);
+  setPressed("scenarioChips",S.scenario);
+  setPressed("langChips",S.lang);
+}
+function setPressed(id,val){
+  var b=document.getElementById(id).querySelectorAll(".chip");
+  for(var i=0;i<b.length;i++){
+    b[i].setAttribute("aria-pressed", b[i].dataset.key===val ? "true":"false");
+  }
+}
+
+document.getElementById("restart").addEventListener("click",reset);
+
+buildChips();
+renderSignals();
+render();
+
+})();
+</script>
+</body>
+</html>
